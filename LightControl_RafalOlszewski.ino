@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h> // handle the LCD display
 
-// Piny swiatel
+// Light pins
 #define LIGHT_1 6 // Glowne
 #define LIGHT_2 7 // Prawe
 #define LIGHT_3 13 // Lewe
@@ -298,8 +298,7 @@ void menuUseEvent(MenuUseEvent used)
 
   /***************SPRAWDZ STAN*****************/
 
-  if (used.item.getName() == " Sprawdz Stan ")
-  {
+  if (used.item.getName() == " Sprawdz Stan ") {
     mainmenu = 0;
     statemenu = 1;
     exitmenu = 0;
@@ -309,8 +308,7 @@ void menuUseEvent(MenuUseEvent used)
 
   /***************WYJSCIE*****************/
 
-  if (used.item.getName() == "   Wyjscie    ") // strona glowna
-  {
+  if (used.item.getName() == "   Wyjscie    ") {  // strona glowna
     mainmenu = 0;
     statemenu = 0;
     exitmenu = 1;
@@ -400,8 +398,7 @@ of arrow symbols, whichever is selected. Everything here is going on is displaye
   int c = changed.to.getShortkey(); // Fetch shortkey (1,2,3, LUB4)
   lcd.clear(); // No comment
   lcd.setCursor(0, 0);
-  if (c == 1) // if the menu Main contacts (shortkey = 1) are:
-  {
+  if (c == 1) { // if the menu Main contacts (shortkey = 1) are:
     lcd.write(3); // Left arrow
     strcpy(Line_1, changed.to.getName());
     // Create a string in the first line
@@ -413,8 +410,7 @@ of arrow symbols, whichever is selected. Everything here is going on is displaye
     lcd.setCursor(15, 1);
     lcd.write(5); // Down arrow
   }
-  if (c == 2) // if the submenu for the child - (shortkey = 2) are:
-  {
+  if (c == 2)  { // if the submenu for the child - (shortkey = 2) are:
     lcd.print("*"); // Draw a star
     strcpy(Line_2, changed.to.getName());
     // Create a string in the first line
@@ -427,8 +423,7 @@ of arrow symbols, whichever is selected. Everything here is going on is displaye
     lcd.setCursor(15, 1);
     lcd.write(7); // Arrow up and down
   }
-  if (c == 3) // if the child has a child - (shortkey = 3) are:
-  {
+  if (c == 3) { // if the child has a child - (shortkey = 3) are:
     lcd.print("*"); // Star
     strcpy(Line_2, changed.to.getName());
     // Copy the files. the name of the menu options to the variable line 2
@@ -443,8 +438,7 @@ of arrow symbols, whichever is selected. Everything here is going on is displaye
     lcd.write(4); // Right arrow as they are the grandchildren
   }
 
-  if (c == 4) // if this grandson (shortkey = 4) are:
-  {
+  if (c == 4) { // if this grandson (shortkey = 4) are:
     lcd.print("*"); // Gwaizdka
     lcd.print(Line_2);
     // Display the first line of the child (or parent grandchild)
@@ -460,12 +454,12 @@ of arrow symbols, whichever is selected. Everything here is going on is displaye
 
 // For example if you are using pins: 1,2,3,11 and 12 are calling: Read_2(8,4,7,8,11)
 int Read_3(int up, int left, int ok, int right, int down)
+{
 // up - no digital pin that is connected to the up
 // Left - no digital pin that is connected to the left buttons
 // Ok - no digital pin that is connected to the OK
 // Right - no digital pin that is connected to the right buttons
 // Lower - no digital pin that is connected to the buttons down
-{
   if (digitalRead(up) == LOW)
   return 1;
   if (digitalRead(left) == LOW)
@@ -481,7 +475,8 @@ int Read_3(int up, int left, int ok, int right, int down)
 
 // ============================================================================================
 //
-void setup() {
+void setup()
+{
   Line_1 = new char[16]; // Initialize a pointer to a dynamic text
   Line_2 = new char[16];
   // Is VERY IMPORTANT because dynamic indicator must indicate
@@ -510,6 +505,11 @@ void setup() {
   pinMode(11, INPUT_PULLUP);
   pinMode(12, INPUT_PULLUP);
 
+  light1.SetState(LOW);
+  light2.SetState(LOW);
+  light3.SetState(LOW);
+  printer.SetState(LOW);
+
   // pinMode (0, OUTPUT); digitalWrite (0, LOW); // For testing
   menuSetup();
   // Function MenuBackend class - there really are creating our menu
@@ -528,7 +528,8 @@ void setup() {
 // --- And it's time for neverending story :-) -------------------------------------------------
 ///////////////////////////////MAIN LOOOOOOOOOOOP///////////////////////////////////////////////
 
-void loop() {
+void loop()
+{
   if (mainmenu == 1) {
     ButtonRead();
   }
@@ -545,7 +546,8 @@ void loop() {
 
 ///////////////////////////////END OF LOOOOOOOOOOOP///////////////////////////////////////////////
 
-void Stan(bool swiatlo) {
+void Stan(bool swiatlo)
+{
   if(swiatlo) lcd.print("ON ");
   else lcd.print("OFF"); 
 }
@@ -555,11 +557,9 @@ void ButtonRead()
   backlight1.Update();
   button = Read_3(8, 9, 10, 11, 12);
   delay(10); // Read the state of the keyboard:
-  if (keyboardchange != button) // if it was the change in the state are:
-  {
+  if (keyboardchange != button) { // if it was the change in the state are:
     backlight1.BackLightOn(); // wlaczenie podswietlenia
-    switch (button) // check to see what was pressed
-    {
+    switch (button) { // check to see what was pressed
     case 0:
       menu.moveRight();
       break; // If pressed, move it in the right menu to the right
@@ -587,66 +587,57 @@ void ButtonRead()
 
 void BluetoothControl()
 {
-  if (Serial.available() > 0) 
-  {receivedstring = "";}
+  if (Serial.available() > 0) {
+    receivedstring = "";
+  }
 
-  while(Serial.available() > 0)
-  {
-    command = ((byte)Serial.read());
+  while(Serial.available() > 0) {
+    command = (Serial.read());
     
-    if(command == ':')
-    {
+    if(command == ':') {
       break;
     }
     
-    else
-    {
+    else {
       receivedstring += command;
     }
     
     //delay(10);
   }
-  if(receivedstring == "L1On" && light1.GetState() == LOW)
-  {
+  if(receivedstring == "G" && light1.GetState() == LOW) {
     light1.SetState(HIGH);
   }
 
-  if(receivedstring =="L1Off" && light1.GetState() == HIGH)
-  {
+  if(receivedstring =="g" && light1.GetState() == HIGH) {
     light1.SetState(LOW);
   }  
 
-  if(receivedstring == "L2On" && light2.GetState() == LOW)
-  {
+  if(receivedstring == "S" && light2.GetState() == LOW) {
     light2.SetState(HIGH);
   }
 
-  if(receivedstring =="L2Off" && light2.GetState() == HIGH)
-  {
+  if(receivedstring == "s" && light2.GetState() == HIGH) {
     light2.SetState(LOW);
   }  
 
-  if(receivedstring == "L3On" && light3.GetState() == LOW)
-  {
+  if(receivedstring == "L" && light3.GetState() == LOW) {
     light3.SetState(HIGH);
   }
 
-  if(receivedstring =="L3Off" && light3.GetState() == HIGH)
-  {
+  if(receivedstring =="l" && light3.GetState() == HIGH) {
     light3.SetState(LOW);
   } 
-  if(receivedstring == "Pon" && printer.GetState() == LOW)
-  {
+  if(receivedstring == "P" && printer.GetState() == LOW) {
     printer.SetState(HIGH);
   }
 
-  if(receivedstring =="Poff" && printer.GetState() == HIGH)
-  {
+  if(receivedstring =="p" && printer.GetState() == HIGH) {
     printer.SetState(LOW);
   } 
 }
 
-void Sensors() {
+void Sensors()
+{
   //delay(10);                     // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
   Serial.print("Sensor1: ");
   Serial.print(sonar1.convert_cm(sonar1.ping_median())); // Send ping, get distance in cm and print result (0 = outside set distance range)
@@ -655,10 +646,11 @@ void Sensors() {
   Serial.println("cm");
 }
 
-void SendAndroidValues() {
+void SendAndroidValues()
+{
   //senddelay1.ShowTime();
   volatile int delaystate = senddelay1.Update2(); //added a delay to eliminate missed transmissions
-  if(delaystate == 1) {
+  if(delaystate == 1)  {
     //puts # before the values so our app knows what to do with the data
     Serial.print('#');
     //for loop cycles through 4 sensors and sends values via serial
@@ -677,7 +669,8 @@ void SendAndroidValues() {
   }
 }
 
-void ExitMenu() {
+void ExitMenu()
+{
   int button = -1;
   //delay(100);
   lcd.setCursor(0, 0);
@@ -690,11 +683,9 @@ void ExitMenu() {
   backlight2.Update(); // BACKLIGHT
   keyboardchange = -1;
   button = Read_3(8, 9, 10, 11, 12);
-  if (keyboardchange != button) // ruszamy do pracy tylko wtedy gdy zmienił sie stan klawiatury
-  {        
+  if (keyboardchange != button){ // ruszamy do pracy tylko wtedy gdy zmienił sie stan klawiatury    
     backlight2.BackLightOn();
-    if (button == 4) // jeśli wciśnieto OK
-    {
+    if (button == 4){ // jeśli wciśnieto OK
       mainmenu = 1;
       statemenu = 0;
       exitmenu = 0;
@@ -712,7 +703,8 @@ void ExitMenu() {
   }
 }
 
-void StateMenu() {
+void StateMenu()
+{
   int button = -1;
   lcd.setCursor(0, 0);
   lcd.print("  Glowne:       ");
@@ -729,11 +721,9 @@ void StateMenu() {
   keyboardchange = -1;
   button = Read_3(8, 9, 10, 11, 12);
 
-  if (keyboardchange != button) // ruszamy do pracy tylko wtedy gdy zmienił sie stan klawiatury
-  {        
+  if (keyboardchange != button){ // ruszamy do pracy tylko wtedy gdy zmienił sie stan klawiatury      
     backlight3.BackLightOn();
-    if (button == 4) // jeśli wciśnieto OK
-    {
+    if (button == 4){ // jeśli wciśnieto OK
       mainmenu = 1;
       statemenu = 0;
       exitmenu = 0;
