@@ -7,7 +7,7 @@
 #define LIGHT_1 6 // Glowne
 #define LIGHT_2 7 // Prawe
 #define LIGHT_3 13 // Lewe
-#define PRINTER_PIN A0 // Drukarka
+#define PRINTER_PIN A0 // Printer
 
 //Sensors
 #define TRIGGER_PIN  2  // Arduino pin tied to trigger pin on the ultrasonic sensor.
@@ -27,8 +27,8 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); // definicja pin�
 volatile int keyboardchange = -1; // to dla kontroli zmiany stanu klawiatury
 volatile int button = -1; // zmienna pomocnicza
 
-char *Line_1; // pierwsza linia wyświetlanego tekstu na LCD
-char *Line_2; // druga linia wyświetlanego tekstu na LCD
+char *Line_1; // First LCD line
+char *Line_2; // 2nd LCD line
 
 String receivedstring;
 volatile char command;
